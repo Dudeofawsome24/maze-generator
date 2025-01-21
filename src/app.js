@@ -113,10 +113,10 @@ function initMaze() {
     location.href = "#generate";
 }
 
-function downloadImage(e) {
-    const image = document.getElementById('maze').toDataURL("image/png");
-    image.replace("image/png", "image/octet-stream");
+function downloadImage() {
+    const image = document.getElementById('maze').toDataURL("image/png").replace("image/png", "image/octet-stream");
     download.setAttribute("href", image);
+    download.click();
 }
 
 function initSolve() {
@@ -141,4 +141,29 @@ function initSolve() {
     }
 
     mazeNodes = {}
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function downloadMultipleMazes() {
+    const numMazesInput = document.getElementById('num-mazes');
+    const numMazes = numMazesInput ? parseInt(numMazesInput.value, 10) : 1;
+    const delay = document.getElementById('delay');
+    const delayValue = delay ? parseInt(delay.value, 10) : 50;
+
+    for (let i = 0; i < numMazes; i++) {
+        console.log(`Starting maze generation ${i + 1}...`);
+        initMaze();
+        console.log(`Maze ${i + 1} generated. Downloading image...`);
+        downloadImage();
+        await sleep(delayValue); // Wait for 1 second to ensure the download is completed
+
+        console.log(`Starting maze solving ${i + 1}...`);
+        initSolve();
+        console.log(`Maze ${i + 1} solved. Downloading solved image...`);
+        downloadImage();
+        await sleep(delayValue); // Wait for 1 second to ensure the download is completed
+    }
 }

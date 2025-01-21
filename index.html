@@ -140,6 +140,14 @@
 				</select>
 			</p>
 			<p>
+				<label for="num-mazes">Number of Mazes:</label>
+				<input id="num-mazes" type="number" name="num-mazes" value="1" min="1">
+			</p>
+			<p>
+				<label for="delay">Generation Delay. Note: Smaller Delay may cause issues in downloading:</label>
+				<input id="delay" type="number" name="delay" value="100" min="100">
+			</p>
+			<p>
 				<label for="bias">Bias:</label>
 				<select id="bias" name="bias">
 					<option value="">none</option>
@@ -174,6 +182,7 @@
 				<button id="create-maze" onclick="initMaze();" class='hide'>Generate Maze</button>
 				<button id="solve" onclick="initSolve();" class='hide'>Solve Maze</button>
 				<a href="" class="hide" id="download">download maze</a>
+				<button id="download-multiple" onclick="downloadMultipleMazes();">Download Multiple Mazes and Solutions</button>
 			</div>
 		</div>
 		<noscript>
