@@ -389,7 +389,15 @@ Maze.prototype.removeMazeWalls = function() {
 	}
 }
 
-Maze.prototype.draw = function() {
+Maze.prototype.displayDifficulty = function() {
+	const difficultyText = document.getElementById('difficulty-text');
+	const difficulty = document.getElementById('difficulty').value;
+	if (difficultyText) {
+		difficultyText.innerHTML = `${difficulty}`;
+	}
+}
+
+Maze.prototype.draw = function(isSolved = false) {
 	const canvas = document.getElementById('maze');
 	if (!canvas || !this.matrix.length) {
 		return;
@@ -401,17 +409,17 @@ Maze.prototype.draw = function() {
 		return;
 	}
 
-	canvas.width = ((this.width * 2) + 1) * this.wallSize;;
-	canvas.height = ((this.height * 2) + 1) * this.wallSize;
+	canvas.width = ((this.width * 2) + 1) * this.wallSize;
+	canvas.height = ((this.height * 2) + 1) * this.wallSize + (isSolved ? 0 : 30); // Add extra space for difficulty text if not solved
 
 	const ctx = canvas.getContext('2d');
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// Add background
 	ctx.fillStyle = this.backgroundColor;
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	ctx.fillRect(0, 0, canvas.width, canvas.height - (isSolved ? 0 : 30)); // Adjust background height
 
-	// Set maze collor
+	// Set maze color
 	ctx.fillStyle = this.color;
 
 	const row_count = this.matrix.length;
@@ -434,5 +442,25 @@ Maze.prototype.draw = function() {
 				ctx.fillRect((j * this.wallSize), (i * this.wallSize), this.wallSize, this.wallSize);
 			}
 		}
+	}
+
+	// Draw "START" text on the start position node
+	if (gateEntry) {
+		ctx.fillStyle = '#000000';
+		const fontSize = this.wallSize / 2;
+		ctx.font = `${fontSize}px Arial`;
+		ctx.textAlign = 'center';
+		ctx.fillText('-->', (gateEntry.x * this.wallSize) + (this.wallSize / 2), (gateEntry.y * this.wallSize) + (this.wallSize / 1.5));
+	}
+
+	if (!isSolved) {
+		this.displayDifficulty();
+
+		// Add difficulty text to the canvas
+		const difficulty = document.getElementById('difficulty').value;
+		ctx.fillStyle = '#000000';
+		ctx.font = '20px Arial';
+		ctx.textAlign = 'center';
+		ctx.fillText(`${difficulty}`, canvas.width / 2, canvas.height - 10);
 	}
 }

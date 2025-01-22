@@ -140,6 +140,15 @@ function initSolve() {
         solver.draw();
     }
 
+    mazeNodes.draw(true); // Draw the solved maze without difficulty text
+
+    // Ensure the solution line is drawn
+    if (mazeNodes.wallsRemoved) {
+        solver.drawAstarSolve();
+    } else {
+        solver.draw();
+    }
+
     mazeNodes = {}
 }
 
