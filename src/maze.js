@@ -397,7 +397,7 @@ Maze.prototype.displayDifficulty = function() {
 	}
 }
 
-Maze.prototype.draw = function(isSolved = false) {
+Maze.prototype.draw = function(isSolved = false, mazeNumber = null) {
 	const canvas = document.getElementById('maze');
 	if (!canvas || !this.matrix.length) {
 		return;
@@ -409,15 +409,16 @@ Maze.prototype.draw = function(isSolved = false) {
 		return;
 	}
 
+	const extraSpace = isSolved ? 0 : (this.wallSize * 5);
 	canvas.width = ((this.width * 2) + 1) * this.wallSize;
-	canvas.height = ((this.height * 2) + 1) * this.wallSize + (isSolved ? 0 : 30); // Add extra space for difficulty text if not solved
+	canvas.height = ((this.height * 2) + 1) * this.wallSize + extraSpace; // Add extra space for difficulty text if not solved
 
 	const ctx = canvas.getContext('2d');
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// Add background
 	ctx.fillStyle = this.backgroundColor;
-	ctx.fillRect(0, 0, canvas.width, canvas.height - (isSolved ? 0 : 30)); // Adjust background height
+	ctx.fillRect(0, extraSpace, canvas.width, canvas.height - extraSpace); // Adjust background height
 
 	// Set maze color
 	ctx.fillStyle = this.color;
@@ -439,7 +440,7 @@ Maze.prototype.draw = function(isSolved = false) {
 			}
 			let pixel = parseInt(this.matrix[i].charAt(j), 10);
 			if (pixel) {
-				ctx.fillRect((j * this.wallSize), (i * this.wallSize), this.wallSize, this.wallSize);
+				ctx.fillRect((j * this.wallSize), (i * this.wallSize) + extraSpace, this.wallSize, this.wallSize);
 			}
 		}
 	}
@@ -450,7 +451,7 @@ Maze.prototype.draw = function(isSolved = false) {
 		const fontSize = this.wallSize / 2;
 		ctx.font = `${fontSize}px Arial`;
 		ctx.textAlign = 'center';
-		ctx.fillText('-->', (gateEntry.x * this.wallSize) + (this.wallSize / 2), (gateEntry.y * this.wallSize) + (this.wallSize / 1.5));
+		ctx.fillText('-->', (gateEntry.x * this.wallSize) + (this.wallSize / 2), (gateEntry.y * this.wallSize) + (this.wallSize / 1.5) + extraSpace);
 	}
 
 	if (!isSolved) {
@@ -458,9 +459,19 @@ Maze.prototype.draw = function(isSolved = false) {
 
 		// Add difficulty text to the canvas
 		const difficulty = document.getElementById('difficulty').value;
+		const textHeight = this.wallSize * 4;
+		const textHeightPlacement = canvas.height - 10; // Position the text at the bottom of the canvas
 		ctx.fillStyle = '#000000';
-		ctx.font = '20px Arial';
+		ctx.font = `${textHeight}px Arial`;
 		ctx.textAlign = 'center';
-		ctx.fillText(`${difficulty}`, canvas.width / 2, canvas.height - 10);
+		ctx.fillText(`${difficulty}`, canvas.width / 2, textHeightPlacement);
+
+		// Add maze number above the maze
+		if (mazeNumber !== null) {
+			ctx.fillStyle = '#000000';
+			ctx.font = `${this.wallSize * 2}px Arial`;
+			ctx.textAlign = 'center';
+			ctx.fillText(`Maze #${mazeNumber}`, canvas.width / 2, this.wallSize * 2);
+		}
 	}
 }

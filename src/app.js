@@ -37,7 +37,7 @@ const download = document.getElementById("download");
 download.addEventListener("click", downloadImage, false);
 download.setAttribute('download', 'maze.png');
 
-function initMaze() {
+function initMaze(mazeNumber = null) {
     download.setAttribute('download', 'maze.png');
     download.innerHTML = 'download maze';
 
@@ -91,9 +91,14 @@ function initMaze() {
         settings['bias'] = bias.options[bias.selectedIndex].value;
     }
 
+    if (mazeNumber === null) {
+        const numStartInput = document.getElementById('num-start');
+        mazeNumber = numStartInput ? parseInt(numStartInput.value, 10) : 1;
+    }
+
     const maze = new Maze(settings);
     maze.generate();
-    maze.draw();
+    maze.draw(false, mazeNumber); // Pass the maze number
 
     if (download && download.classList.contains('hide')) {
         download.classList.toggle("hide");
@@ -164,19 +169,23 @@ async function downloadMultipleMazes() {
     const delay = document.getElementById('delay');
     const delayValue = delay ? parseInt(delay.value, 10) : 50;
 
+    const numStartInput = document.getElementById('num-start');
+    const startNumber = numStartInput ? parseInt(numStartInput.value, 10) : 1;
+
     for (let i = 0; i < numMazes; i++) {
-        console.log(`Starting maze generation ${i + 1}...`);
-        initMaze();
-        console.log(`Maze ${i + 1} generated. Adding image to unsolved zip...`);
+        const mazeNumber = startNumber + i;
+        console.log(`Starting maze generation ${mazeNumber}...`);
+        initMaze(mazeNumber);
+        console.log(`Maze ${mazeNumber} generated. Adding image to unsolved zip...`);
         const mazeImage = document.getElementById('maze').toDataURL("image/png").replace("image/png", "image/octet-stream");
-        unsolvedZip.file(`maze_${i + 1}.png`, mazeImage.split(',')[1], {base64: true});
+        unsolvedZip.file(`maze_${mazeNumber}.png`, mazeImage.split(',')[1], {base64: true});
         await sleep(delayValue);
 
-        console.log(`Starting maze solving ${i + 1}...`);
+        console.log(`Starting maze solving ${mazeNumber}...`);
         initSolve();
-        console.log(`Maze ${i + 1} solved. Adding solved image to solved zip...`);
+        console.log(`Maze ${mazeNumber} solved. Adding solved image to solved zip...`);
         const solvedImage = document.getElementById('maze').toDataURL("image/png").replace("image/png", "image/octet-stream");
-        solvedZip.file(`maze_solved_${i + 1}.png`, solvedImage.split(',')[1], {base64: true});
+        solvedZip.file(`maze_solved_${mazeNumber}.png`, solvedImage.split(',')[1], {base64: true});
         await sleep(delayValue);
     }
 
